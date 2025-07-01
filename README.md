@@ -1,4 +1,4 @@
-# 🔔 EventEmitter (TypeScript) (v1.0.0)
+# 🔔 EventEmitter (TypeScript) (v1.0.1)
 
 A lightweight, fully type-safe `EventEmitter` implementation in TypeScript.
 
