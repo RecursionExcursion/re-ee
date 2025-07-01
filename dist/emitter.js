@@ -20,9 +20,9 @@ export class EventEmitter {
         };
         this.on(event, onceWrapper);
     }
-    emit(event, data) {
+    emit(event, ...args) {
         if (this.events[event]) {
-            this.events[event].forEach((listener) => listener(data));
+            this.events[event].forEach((listener) => listener(...args));
         }
     }
 }
