@@ -17,6 +17,14 @@ export class EventEmitter<EventMap extends Record<string, any>> {
     }
   }
 
+  once<K extends keyof EventMap>(event: K, listener: Listener<EventMap, K>) {
+    const onceWrapper: Listener<EventMap, K> = (data) => {
+      this.off(event, onceWrapper);
+      listener(data);
+    };
+    this.on(event, onceWrapper);
+  }
+
   emit<K extends keyof EventMap>(event: K, data: EventMap[K]) {
     if (this.events[event]) {
       this.events[event].forEach((listener) => listener(data));

@@ -1,16 +1,21 @@
-# Type-Safe EventEmitter
+# 🔔 Type-Safe EventEmitter (TypeScript)
 
-A minimal, strongly typed `EventEmitter` class built in TypeScript.  
-Define custom event types and get full type safety for event names and payloads.
+A lightweight, fully type-safe `EventEmitter` implementation in TypeScript.
+
+Supports typed events with specific payloads, with `on`, `off`, `once`, and `emit` methods.
+
+---
 
 ## ✨ Features
 
-- Fully type-safe: event names and payloads are strictly typed
-- Lightweight: one file, no dependencies
-- Simple API: `on`, `off`, and `emit`
-- Fire-and-forget semantics (return values are ignored)
+- 🔒 **Type-safe**: event names and payloads are strictly typed
+- 🧼 **Minimal**: one file, no dependencies
+- 🚀 **Simple API**: `on`, `off`, `once`, and `emit`
+- 🧠 **Fire-and-forget**: listener return values are ignored
 
-## 📦 Usage
+---
+
+## 📦 Example Usage
 
 ```ts
 // Define your event map
@@ -20,27 +25,41 @@ type MyEvents = {
   ready: void;
 };
 
-// Create an instance
 const emitter = new EventEmitter<MyEvents>();
 
-// Add listeners
+// Listen for an event
 emitter.on('greet', (name) => {
   console.log(`Hello, ${name}`);
 });
 
-emitter.on('login', ({ userId }) => {
+// Listen only once
+emitter.once('login', ({ userId }) => {
   console.log(`User logged in: ${userId}`);
 });
 
-emitter.on('ready', () => {
-  console.log('System is ready.');
-});
-
 // Emit events
-emitter.emit('greet', 'Alice');
-emitter.emit('login', { userId: 42 });
-emitter.emit('ready', undefined); // or just `emitter.emit('ready', undefined)`
+emitter.emit('greet', 'Alice'); // Hello, Alice
+emitter.emit('login', { userId: 42 }); // User logged in: 42
+emitter.emit('login', { userId: 99 }); // (ignored)
 ```
+
+---
+
+## 🛠 API
+
+### `on(event, listener)`
+Adds a listener for the given event.
+
+### `once(event, listener)`
+Adds a listener that will be removed after the first call.
+
+### `off(event, listener)`
+Removes a previously registered listener.
+
+### `emit(event, data)`
+Fires all listeners for the given event, passing the data.
+
+---
 
 ## 🔧 Implementation
 
@@ -65,6 +84,14 @@ export class EventEmitter<EventMap extends Record<string, any>> {
     }
   }
 
+  once<K extends keyof EventMap>(event: K, listener: Listener<EventMap, K>) {
+    const onceWrapper: Listener<EventMap, K> = (data) => {
+      this.off(event, onceWrapper);
+      listener(data);
+    };
+    this.on(event, onceWrapper);
+  }
+
   emit<K extends keyof EventMap>(event: K, data: EventMap[K]) {
     if (this.events[event]) {
       this.events[event].forEach((listener) => listener(data));
@@ -73,6 +100,8 @@ export class EventEmitter<EventMap extends Record<string, any>> {
 }
 ```
 
-## 📝 License
+---
+
+## 📄 License
 
 MIT
